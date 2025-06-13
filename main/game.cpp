@@ -21,7 +21,7 @@ void Game::initializeGrid(void) {
             #ifndef TEST
                 this->grid[row][col] = 0;
             #else
-                if (row == 0 || col == 0 || row == numRows - 1 || col == numColumns - 1){
+                if (row == 1 && col == 0){
                     this->grid[row][col] = 1;
                 }
                 else {
@@ -90,7 +90,7 @@ void Game::plexLine(void){
             setPinLowReg(regVal);
         }
 
-        // softDelay(30000);
+        // softDelay(10);
     }
 }
 
