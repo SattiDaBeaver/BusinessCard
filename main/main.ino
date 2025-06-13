@@ -17,7 +17,7 @@ int main(void) {
 
   Game game;
   int count = 0;
-  int maxCount = 1000;
+  int maxCount = 3000;
 
   while (1) {
     count = (count + 1) % maxCount;

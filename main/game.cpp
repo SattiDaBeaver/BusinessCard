@@ -144,7 +144,7 @@ void Game::getRandomObstacle(uint8_t minGapSize, uint8_t* laneArray){
     if (gapSize >= numRows){
         gapSize = numRows - 1;
     }
-    uint8_t position = (rand() % (4 - gapSize));
+    uint8_t position = (rand() % (5 - gapSize));
     for (int row = 0; row < numRows; row++){
         if (row >= position && row < (position + gapSize)){
             laneArray[row] = 0;
