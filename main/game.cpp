@@ -9,8 +9,15 @@
 Game::Game(){
     numRows = 4;
     numColumns = 5;
-    minGapSize = 2;
+    minGapSize = 1;
+    playerRow = 1;
     score = 0;
+    inputCapture = 0;
+
+    gameOver = 0;
+
+    srand(TCB0.CNT);
+
     initializeGrid();
     setupInput();
 }
@@ -21,7 +28,7 @@ void Game::initializeGrid(void) {
             #ifndef TEST
                 this->grid[row][col] = 0;
             #else
-                if (row == 1 && col == 0){
+                if (row == playerRow && col == 0){
                     this->grid[row][col] = 1;
                 }
                 else {
@@ -35,10 +42,12 @@ void Game::initializeGrid(void) {
 void Game::setupInput(void){
     PORTB.DIRCLR = PIN0_bm | PIN1_bm | PIN2_bm | PIN3_bm;  // Set PB0–PB3 as input
 
-    PORTB.PIN0CTRL = PORT_PULLUPEN_bm;
-    PORTB.PIN1CTRL = PORT_PULLUPEN_bm;
-    PORTB.PIN2CTRL = PORT_PULLUPEN_bm;
-    PORTB.PIN3CTRL = PORT_PULLUPEN_bm;
+    PORTB.PIN0CTRL = PORT_PULLUPEN_bm | PORT_ISC_FALLING_gc;
+    PORTB.PIN1CTRL = PORT_PULLUPEN_bm | PORT_ISC_FALLING_gc;
+    PORTB.PIN2CTRL = PORT_PULLUPEN_bm | PORT_ISC_FALLING_gc;
+    PORTB.PIN3CTRL = PORT_PULLUPEN_bm | PORT_ISC_FALLING_gc;
+
+    PORTB.INTFLAGS = 0x0F;  // Clear PB0–PB3 flags
 }
 
 uint8_t Game::getInput(void){
@@ -139,6 +148,48 @@ void Game::softDelay(uint32_t delay){
 }
 
 // Game Logic
+
+void Game::gameLoop(void){
+    int delay = 0;
+    int maxCount = 1000;
+
+    int wangdapudu = 0;
+    int maxWangdapudu = 3;
+
+    while (1){
+        if (gameOver){
+            restartGame();
+        }
+
+        delay = (delay + 1) % maxCount;
+
+        if (delay == 0 || delay == (maxCount >> 1)){
+            if (getInput() & (IN_UP | IN_LEFT)){
+                movePlayer(DIR_UP);
+            }
+            if (getInput() & (IN_DOWN | IN_RIGHT)){
+                movePlayer(DIR_DOWN);
+            }
+        }
+
+    
+        if (delay == 0){
+            wangdapudu = (wangdapudu + 1) % maxWangdapudu;
+
+            if (wangdapudu == 0){
+                shiftLane(OBSTACLE);
+            }
+            else {
+                shiftLane(NO_OBSTACLE);
+            }
+        }
+
+        gameOver = detectCollision();
+
+        plexLine();
+    }
+}
+
 void Game::getRandomObstacle(uint8_t minGapSize, uint8_t* laneArray){
     uint8_t gapSize = (rand() % 3) + minGapSize;
     if (gapSize >= numRows){
@@ -155,7 +206,7 @@ void Game::getRandomObstacle(uint8_t minGapSize, uint8_t* laneArray){
     }
 }
 
-void Game::shiftLane(void){
+void Game::shiftLane(uint8_t newLane){
     for (int col = 1; col < numColumns; col++){
         for (int row = 0; row < numRows; row++){
             if (col == 1){
@@ -166,10 +217,75 @@ void Game::shiftLane(void){
             }
         }
     }
+
+    if (newLane == 0){
+        for (int row = 0; row < numRows; row++){
+            grid[row][numColumns - 1] = 0;
+        }
+        return;
+    }
+
     uint8_t laneArray[4];
     getRandomObstacle(minGapSize, laneArray);
     for (int row = 0; row < numRows; row++){
         grid[row][numColumns - 1] = laneArray[row];
+    }
+    return;
+}
+
+void Game::movePlayer(int dir){
+    playerRow += dir;
+    if (playerRow >= numRows){
+        playerRow = 0;
+    }
+    else if (playerRow < 0){
+        playerRow = numRows - 1;
+    }
+    for (int row = 0; row < numRows; row++){
+        if (row == playerRow){
+            this->grid[row][0] = 1;
+        }
+        else {
+            this->grid[row][0] = 0;
+        }
+    }
+}
+
+bool Game::detectCollision(void){
+    if (grid[playerRow][0] && grid[playerRow][1]){
+        return 1;
+    }
+    return 0;
+}
+
+void Game::restartGame(void){
+    int count = 0;
+    int maxCount = 30000;
+    int wait = 0;
+    int maxWait = 4;
+    while(1){
+        count++;
+        if (count >= maxCount){
+            count = 0;
+            wait = (wait + 1) % maxWait;
+        }
+        if (count < (maxCount >> 5)){
+            plexLine();
+        } else {
+            clearLED();
+        }
+
+        if (getInput() && (wait == maxWait - 1)){
+            minGapSize = 1;
+            playerRow = 1;
+            score = 0;
+            inputCapture = 0;
+
+            gameOver = 0;
+
+            initializeGrid();
+            return;
+        }
     }
 }
 

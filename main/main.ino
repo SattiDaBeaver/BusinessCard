@@ -6,31 +6,18 @@
 #include "game.h"
 #include "globals.h"
 
+ISR(PORTB_PORT_vect);
+
+Game game;
+
 int main(void) {
-  // PORTA.DIR = (1 << PIN4) | (1 << PIN5);  // Set as output
+  // sei();
+  game.gameLoop();
+}
 
-  // PORTA.OUT &= ~(1 << PIN4);
-  // // PORTA.OUT |= (1 << PIN5);
+ISR(PORTB_PORT_vect) {
+    uint8_t flags = PORTB.INTFLAGS;
+    PORTB.INTFLAGS = 0xFF;
 
-  // // PORTA.OUT &= ~(1 << PIN2);
-  // // PORTA.OUT |= (1 << PIN3);
-
-  Game game;
-  int count = 0;
-  int maxCount = 3000;
-
-  while (1) {
-    count = (count + 1) % maxCount;
-    if (game.getInput()) {
-      game.clearLED();
-    }
-    else {
-      game.plexLine();
-      if (count == 0){
-        game.shiftLane();
-      }
-      
-      // game.plexPixel();
-    }
-  }
+    game.inputCapture = flags;
 }

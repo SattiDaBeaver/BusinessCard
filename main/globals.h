@@ -1,6 +1,8 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+#include <stdint.h>
+
 #define OUTPUT_PIN_NUM      5
 
 #define X1                  1
@@ -23,5 +25,10 @@
 #define EXT1                6
 #define EXT2                7
 
+#define OBSTACLE            1
+#define NO_OBSTACLE         0
+
+#define DIR_UP              1
+#define DIR_DOWN            -1
 
 #endif
