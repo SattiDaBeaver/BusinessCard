@@ -16,13 +16,20 @@ int main(void) {
   // // PORTA.OUT |= (1 << PIN3);
 
   Game game;
+  int count = 0;
+  int maxCount = 1000;
 
   while (1) {
+    count = (count + 1) % maxCount;
     if (game.getInput()) {
       game.clearLED();
     }
     else {
       game.plexLine();
+      if (count == 0){
+        game.shiftLane();
+      }
+      
       // game.plexPixel();
     }
   }

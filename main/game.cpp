@@ -9,6 +9,8 @@
 Game::Game(){
     numRows = 4;
     numColumns = 5;
+    minGapSize = 2;
+    score = 0;
     initializeGrid();
     setupInput();
 }
@@ -79,15 +81,16 @@ void Game::plexLine(void){
                 }
             }
         }
-
-        clearLED();
+        if (regVal != 0){
+            clearLED();
         
-        setPinOutReg(regVal | (1 << (col + 1)));
-        setPinHigh(col + 1);
+            setPinOutReg(regVal | (1 << (col + 1)));
+            setPinHigh(col + 1);
 
-        setPinLowReg(regVal);
+            setPinLowReg(regVal);
+        }
 
-        // softDelay(10);
+        // softDelay(30000);
     }
 }
 
@@ -136,9 +139,38 @@ void Game::softDelay(uint32_t delay){
 }
 
 // Game Logic
-uint8_t Game::getRandomObstacle(uint8_t minGapSize){
+void Game::getRandomObstacle(uint8_t minGapSize, uint8_t* laneArray){
     uint8_t gapSize = (rand() % 3) + minGapSize;
+    if (gapSize >= numRows){
+        gapSize = numRows - 1;
+    }
+    uint8_t position = (rand() % (4 - gapSize));
+    for (int row = 0; row < numRows; row++){
+        if (row >= position && row < (position + gapSize)){
+            laneArray[row] = 0;
+        }
+        else {
+            laneArray[row] = 1;
+        }
+    }
+}
 
+void Game::shiftLane(void){
+    for (int col = 1; col < numColumns; col++){
+        for (int row = 0; row < numRows; row++){
+            if (col == 1){
+                grid[row][col] = 0; // Clear the first column
+            }
+            else {
+                grid[row][col - 1] = grid[row][col]; // Shift left
+            }
+        }
+    }
+    uint8_t laneArray[4];
+    getRandomObstacle(minGapSize, laneArray);
+    for (int row = 0; row < numRows; row++){
+        grid[row][numColumns - 1] = laneArray[row];
+    }
 }
 
 

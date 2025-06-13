@@ -7,6 +7,8 @@ class Game {
     public:
         char grid[4][5]; // 4 Rows, 5 Columns
         uint8_t numRows, numColumns;
+        uint8_t minGapSize;
+        int score;
         Game();
 
         // Setup
@@ -35,8 +37,8 @@ class Game {
         void plexLine(void);
 
         // Game Logic
-        uint8_t getRandomObstacle(uint8_t minGapSize);
-        
+        void getRandomObstacle(uint8_t minGapSize, uint8_t* laneArray);
+        void shiftLane(void);
 };
 
 #endif
