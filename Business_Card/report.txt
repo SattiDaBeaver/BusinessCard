@@ -1,0 +1,12 @@
+Warning: Width correction constrained.  The width correction value must be in the range of [0.000001 mm; 0.199999 mm] for the current design rules.
+Plotted to 'C:\Projects\Business_Card\Business_Card\Business_Card-F_Cu.gbr'.
+Plotted to 'C:\Projects\Business_Card\Business_Card\Business_Card-B_Cu.gbr'.
+Plotted to 'C:\Projects\Business_Card\Business_Card\Business_Card-F_Paste.gbr'.
+Plotted to 'C:\Projects\Business_Card\Business_Card\Business_Card-B_Paste.gbr'.
+Plotted to 'C:\Projects\Business_Card\Business_Card\Business_Card-F_Silkscreen.gbr'.
+Plotted to 'C:\Projects\Business_Card\Business_Card\Business_Card-B_Silkscreen.gbr'.
+Plotted to 'C:\Projects\Business_Card\Business_Card\Business_Card-F_Mask.gbr'.
+Plotted to 'C:\Projects\Business_Card\Business_Card\Business_Card-B_Mask.gbr'.
+Plotted to 'C:\Projects\Business_Card\Business_Card\Business_Card-Edge_Cuts.gbr'.
+Created Gerber job file 'C:\Projects\Business_Card\Business_Card\Business_Card-job.gbrjob'.
+Info: Done.
